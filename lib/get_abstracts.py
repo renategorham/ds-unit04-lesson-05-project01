@@ -25,7 +25,7 @@ def get_abstracts(search_term, n, email, api_key):
     pmid_list = record['IdList'][0:n-1]
 
 #get abstract list as dict. Entrez.efetch
-    abstract_dict = {}
+    abstract_list = []
     without_abstract = []
 
     Entrez.email = email
@@ -41,7 +41,8 @@ def get_abstracts(search_term, n, email, api_key):
         article = pubmed_article['MedlineCitation']['Article']
         if 'Abstract' in article:
             abstract = article['Abstract']['AbstractText'][0]
-            abstract_dict[pmid] = abstract
+            entry = pmid, search_term, abstract
+            abstract_list.append(entry)
 #some PMIDs amy not have an abstract, place those PMIDs in list
         else:
             without_abstract.append(pmid)
@@ -51,5 +52,5 @@ def get_abstracts(search_term, n, email, api_key):
     file_name = search_term + '.csv'
     with open(os.path.join(data_dir, file_name),'w') as f:
        w = csv.writer(f)
-       w.writerows(abstract_dict.items())
+       w.writerows(abstract_list)
         
